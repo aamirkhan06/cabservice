@@ -1,0 +1,250 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/trip/book:
+    post:
+      tags:
+      - trip-booking-controller
+      operationId: bookCab
+      parameters:
+      - name: apply-coupon
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripBookingRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TripBookingResponse'
+  /api/v1/driver:
+    post:
+      tags:
+      - driver-controller
+      operationId: addDriver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/customer:
+    post:
+      tags:
+      - customer-controller
+      operationId: addCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+  /api/v1/customer/gender/{gender}/age/{age}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getCustomerByGenderAndAgeGreaterThan
+      parameters:
+      - name: gender
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+          - OTHER
+      - name: age
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerResponse'
+  /api/v1/coupon:
+    get:
+      tags:
+      - coupon-controller
+      operationId: addCoupon
+      parameters:
+      - name: coupon-code
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: percentage-discount
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+components:
+  schemas:
+    TripBookingRequest:
+      type: object
+      properties:
+        pickUp:
+          type: string
+        destination:
+          type: string
+        tripDistanceInKm:
+          type: number
+          format: double
+        customerEmail:
+          type: string
+    CabResponse:
+      type: object
+      properties:
+        cabNumber:
+          type: string
+        carModel:
+          type: string
+        farePerKm:
+          type: number
+          format: double
+    CustomerResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+    DriverResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        rating:
+          type: number
+          format: double
+        mobileNumber:
+          type: string
+        cabResponse:
+          $ref: '#/components/schemas/CabResponse'
+    TripBookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: string
+        pickUp:
+          type: string
+        destination:
+          type: string
+        tripDistanceInKm:
+          type: number
+          format: double
+        totalFare:
+          type: number
+          format: double
+        tripStatus:
+          type: string
+          enum:
+          - IN_TRANSIT
+          - COMPLETED
+          - CANCELLED
+        bookAt:
+          type: string
+          format: date-time
+        customerResponse:
+          $ref: '#/components/schemas/CustomerResponse'
+        driverResponse:
+          $ref: '#/components/schemas/DriverResponse'
+    CabRequest:
+      type: object
+      properties:
+        cabNumber:
+          type: string
+        carType:
+          type: string
+          enum:
+          - MINI
+          - SEDAN
+          - SUV
+          - HATCHBAG
+          - COMPACT_suv
+          - WAGON_R
+        carModel:
+          type: string
+        company:
+          type: string
+        numberOfSeats:
+          type: integer
+          format: int32
+        farePerKm:
+          type: number
+          format: double
+    DriverRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+          format: int32
+        panNumber:
+          type: string
+        mobileNumber:
+          type: string
+        cab:
+          $ref: '#/components/schemas/CabRequest'
+    CustomerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+          format: int32
+        email:
+          type: string
+        address:
+          type: string
+        gender:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+          - OTHER
