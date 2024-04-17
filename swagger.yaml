@@ -2,9 +2,6 @@ openapi: 3.0.1
 info:
   title: OpenAPI definition
   version: v0
-servers:
-- url: https://aamirkhan06.github.io/test_github-repo/
-  description: Access to the API via GitHub Pages
 paths:
   /api/v1/trip/book:
     post:
